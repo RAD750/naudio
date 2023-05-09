@@ -1,0 +1,18 @@
+[
+{
+    "modid": "NAudio_Enn3DevPlayer",
+    "name": "NAudio Mod",
+    "version": "1.0",
+    "credits": "Enn3DevPlayer",
+    "authors": [
+        "Enn3DevPlayer"
+    ],
+    "description": "Audio stream from web radios' OGG!",
+    "url": "",
+    "updateUrl": "",
+    "logoFile": ""
+    "parent": ""
+    "screenshot": [
+    ]
+}
+]
