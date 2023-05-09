@@ -11,6 +11,7 @@ public class NPlayer {
     private final double sourceX, sourceY, sourceZ;
     private boolean play;
     private final boolean isServer;
+    private String urlPlaying;
 
     public NPlayer(double sourceX, double sourceY, double sourceZ, boolean isRemote) {
         this.id = ID++;
@@ -20,6 +21,7 @@ public class NPlayer {
         this.sourceZ = sourceZ;
         this.play = false;
         this.isServer = !isRemote;
+        this.urlPlaying = "";
     }
 
     public void play(String urlString) {
@@ -29,6 +31,7 @@ public class NPlayer {
             if (result.isError())
                 System.out.println(result.getError());
             play = true;
+            this.urlPlaying = urlString;
         }
     }
 
@@ -54,17 +57,24 @@ public class NPlayer {
 
     public void stop() {
         if (isServer) {
+            if (this.play) {
+                togglePlay();
+            }
+
             NResult result = PacketHandler.sendStop(id, sourceX, sourceY, sourceZ);
             if (result.isError()) {
                 System.out.println(result.getError());
             }
-            return;
         }
+    }
 
-        if (this.play) {
-            togglePlay();
+    public void sendUpdate() {
+        if (isServer) {
+            NResult result = PacketHandler.sendUpdate(id, urlPlaying, volume, play, sourceX, sourceY, sourceZ);
+            if (result.isError()) {
+                System.out.println(result.getError());
+            }
         }
-        NAudioManager.getInstance().stop(id);
     }
 
     public float getVolume() {

@@ -1,6 +1,7 @@
 package naudio.audio;
 
 import naudio.messages.*;
+import naudio.utils.NData;
 import naudio.utils.NResult;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -13,12 +14,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class NAudioManager {
     private final HashMap<Integer, NPlayerThread> players;
     private final HashMap<Integer, LinkedBlockingDeque<NMessage>> channels;
+    private final ConcurrentLinkedQueue<NData> data;
     private final ReentrantLock lock;
     private final Thread processor;
 
@@ -35,6 +38,7 @@ public class NAudioManager {
     public NAudioManager() {
         this.players = new HashMap<Integer, NPlayerThread>();
         this.channels = new HashMap<Integer, LinkedBlockingDeque<NMessage>>();
+        this.data = new ConcurrentLinkedQueue<NData>();
         this.lock = new ReentrantLock();
         this.processor = new Thread(new Runnable() {
             @Override
@@ -59,6 +63,18 @@ public class NAudioManager {
                             }
                         } finally {
                             lock.unlock();
+                        }
+                    }
+
+                    NData nData;
+                    while ((nData = data.poll()) != null) {
+                        try {
+                            URL url = new URL(nData.getUrlString());
+                            InputStream stream = new BufferedInputStream(url.openStream());
+                            unsafeSendMessage(nData.getId(), new NMessagePlayAudio(stream, nData.getSourceX(), nData.getSourceY(), nData.getSourceZ()));
+                        } catch (MalformedURLException ignored) {
+
+                        } catch (IOException ignored) {
                         }
                     }
 
@@ -109,13 +125,8 @@ public class NAudioManager {
                 this.unsafeAddPlayer(id);
             }
 
-            URL url = new URL(urlString);
-            InputStream stream = new BufferedInputStream(url.openStream());
-            unsafeSendMessage(id, new NMessagePlayAudio(stream, sourceX, sourceY, sourceZ));
-        } catch (MalformedURLException ignored) {
-            return NResult.error("Invalid URL");
-        } catch (IOException ignored) {
-            return NResult.error("Can't open stream to URL");
+            // Add data to be processed
+            data.add(new NData(id, urlString, sourceX, sourceY, sourceZ));
         } finally {
             lock.unlock();
         }

@@ -129,4 +129,24 @@ public class PacketHandler implements IPacketHandler {
         PacketDispatcher.sendPacketToAllAround(sourceX, sourceY, sourceZ, 64.0, 0, PacketDispatcher.getPacket(ModInformation.CHANNEL, byteStream.toByteArray()));
         return NResult.ok();
     }
+
+    public static NResult sendUpdate(int id, String url, float volume, boolean playing, double sourceX, double sourceY, double sourceZ) {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream dataStream = new DataOutputStream(byteStream);
+
+        try {
+            dataStream.writeInt(PacketTypes.SET_STATE);
+            dataStream.writeInt(id);
+            dataStream.writeUTF(url);
+            dataStream.writeDouble(sourceX);
+            dataStream.writeDouble(sourceY);
+            dataStream.writeDouble(sourceZ);
+            dataStream.writeFloat(volume);
+            dataStream.writeBoolean(playing);
+        } catch (IOException e) {
+            return NResult.error("Can't load sendUpdate packet");
+        }
+
+        return NResult.ok();
+    }
 }
