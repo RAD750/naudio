@@ -10,7 +10,7 @@ import java.util.List;
 
 public class NAudioTE extends TileEntity implements IHostedPeripheral {
     private NPlayer nPlayer;
-    private final String[] methods = new String[]{"play", "togglePlay", "setVolume", "getVolume", "isPlaying", "help"};
+    private final String[] methods = new String[]{"play", "togglePlay", "setVolume", "getVolume", "isPlaying", "help", "sendUpdate"};
 
     @Override
     public boolean canUpdate() {
@@ -72,7 +72,14 @@ public class NAudioTE extends TileEntity implements IHostedPeripheral {
                             "togglePlay() - toggles the play function (aka stop/play)\n" +
                             "setVolume(volume) - sets the output volume, must be a float between 0.0 and 1.0\n" +
                             "getVolume() - returns the output volume\n" +
-                            "isPlaying() - returns whether the player is playing (aka not stopped)"};
+                            "isPlaying() - returns whether the player is playing (aka not stopped)\n" +
+                            "sendUpdate() - sends update to all nearby clients who haven't connected yet (useful to web radios, have to be called once every some seconds if you're using this function)"};
+                case 6: //sendUpdate
+                    if (p2.length != 0) {
+                        return new Object[]{"error", "not valid call"};
+                    }
+                    nPlayer.sendUpdate();
+                    break;
             }
         } else {
             return new Object[]{"error", "function not found"};
