@@ -147,6 +147,9 @@ public class PacketHandler implements IPacketHandler {
             return NResult.error("Can't load sendUpdate packet");
         }
 
+        PacketDispatcher.sendPacketToAllAround(sourceX, sourceY, sourceZ, 64.0, 0, PacketDispatcher.getPacket(ModInformation.CHANNEL, byteStream.toByteArray()));
+
+
         return NResult.ok();
     }
 }
