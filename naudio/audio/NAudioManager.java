@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.ReentrantLock;
@@ -117,6 +118,10 @@ public class NAudioManager {
         sendMessage(id, new NMessageVolume(volume));
     }
 
+    public void setAmpl(int id, float ampl) {
+        sendMessage(id, new NMessageAmpl(ampl));
+    }
+
     public NResult play(int id, String urlString, double sourceX, double sourceY, double sourceZ) {
         try {
             lock.lock();
@@ -144,9 +149,10 @@ public class NAudioManager {
         if (this.channels.containsKey(id)) unsafeStop(id);
     }
 
-    public void setState(int id, String urlString, double sourceX, double sourceY, double sourceZ, float volume, boolean playing) {
+    public void setState(int id, String urlString, double sourceX, double sourceY, double sourceZ, float volume, float ampl, boolean playing) {
         this.play(id, urlString, sourceX, sourceY, sourceZ);
         this.setVolume(id, volume);
+        this.setAmpl(id, ampl);
         if (!playing) this.togglePlay(id);
     }
 

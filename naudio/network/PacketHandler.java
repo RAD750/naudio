@@ -52,15 +52,19 @@ public class PacketHandler implements IPacketHandler {
                 sourceY = reader.readDouble();
                 sourceZ = reader.readDouble();
                 float volume = reader.readFloat();
+                float ampl = reader.readFloat();
                 boolean playing = reader.readBoolean();
 
-                NAudioManager.getInstance().setState(id, url, sourceX, sourceY, sourceZ, volume, playing);
+                NAudioManager.getInstance().setState(id, url, sourceX, sourceY, sourceZ, volume, ampl, playing);
                 break;
             case PacketTypes.ADD_PLAYER:
                 NAudioManager.getInstance().addPlayer(reader.readInt());
                 break;
             case PacketTypes.STOP:
                 NAudioManager.getInstance().stop(reader.readInt());
+                break;
+            case PacketTypes.SET_AMPL:
+                NAudioManager.getInstance().setAmpl(reader.readInt(), reader.readFloat());
                 break;
         }
     }
@@ -108,7 +112,23 @@ public class PacketHandler implements IPacketHandler {
             dataStream.writeInt(id);
             dataStream.writeFloat(volume);
         } catch (IOException e) {
-            return NResult.error("Can't load togglePlay packet");
+            return NResult.error("Can't load volume packet");
+        }
+
+        PacketDispatcher.sendPacketToAllAround(sourceX, sourceY, sourceZ, 64.0, 0, PacketDispatcher.getPacket(ModInformation.CHANNEL, byteStream.toByteArray()));
+        return NResult.ok();
+    }
+
+    public static NResult sendAmpl(int id, float ampl, double sourceX, double sourceY, double sourceZ) {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        DataOutputStream dataStream = new DataOutputStream(byteStream);
+
+        try {
+            dataStream.writeInt(PacketTypes.SET_AMPL);
+            dataStream.writeInt(id);
+            dataStream.writeFloat(ampl);
+        } catch (IOException e) {
+            return NResult.error("Can't load ampl packet");
         }
 
         PacketDispatcher.sendPacketToAllAround(sourceX, sourceY, sourceZ, 64.0, 0, PacketDispatcher.getPacket(ModInformation.CHANNEL, byteStream.toByteArray()));
@@ -123,14 +143,14 @@ public class PacketHandler implements IPacketHandler {
             dataStream.writeInt(PacketTypes.STOP);
             dataStream.writeInt(id);
         } catch (IOException e) {
-            return NResult.error("Can't load togglePlay packet");
+            return NResult.error("Can't load stop packet");
         }
 
         PacketDispatcher.sendPacketToAllAround(sourceX, sourceY, sourceZ, 64.0, 0, PacketDispatcher.getPacket(ModInformation.CHANNEL, byteStream.toByteArray()));
         return NResult.ok();
     }
 
-    public static NResult sendUpdate(int id, String url, float volume, boolean playing, double sourceX, double sourceY, double sourceZ) {
+    public static NResult sendUpdate(int id, String url, float volume, float ampl, boolean playing, double sourceX, double sourceY, double sourceZ) {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream(byteStream);
 
@@ -142,14 +162,13 @@ public class PacketHandler implements IPacketHandler {
             dataStream.writeDouble(sourceY);
             dataStream.writeDouble(sourceZ);
             dataStream.writeFloat(volume);
+            dataStream.writeFloat(ampl);
             dataStream.writeBoolean(playing);
         } catch (IOException e) {
-            return NResult.error("Can't load sendUpdate packet");
+            return NResult.error("Can't load update packet");
         }
 
         PacketDispatcher.sendPacketToAllAround(sourceX, sourceY, sourceZ, 64.0, 0, PacketDispatcher.getPacket(ModInformation.CHANNEL, byteStream.toByteArray()));
-
-
         return NResult.ok();
     }
 }

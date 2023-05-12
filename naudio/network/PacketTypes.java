@@ -7,4 +7,5 @@ public class PacketTypes {
     public static final int SET_STATE = 3;
     public static final int ADD_PLAYER = 4;
     public static final int STOP = 5;
+    public static final int SET_AMPL = 6;
 }

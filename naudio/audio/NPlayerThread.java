@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class NPlayerThread extends Thread {
     private final LinkedBlockingDeque<NMessage> channel;
     private float volume;
+    private float ampl;
     private Bitstream stream;
     private AudioDevice audioDevice;
     private Decoder decoder;
@@ -27,6 +28,7 @@ public class NPlayerThread extends Thread {
     public NPlayerThread(LinkedBlockingDeque<NMessage> channel) {
         this.channel = channel;
         this.volume = 1.0f;
+        this.ampl = 1.0f;
         stream = null;
         play = false;
         minecraft = Minecraft.getMinecraft();
@@ -101,10 +103,15 @@ public class NPlayerThread extends Thread {
                 sourceY = ((NMessagePlayAudio) message).getSourceY();
                 sourceZ = ((NMessagePlayAudio) message).getSourceZ();
                 play = true;
-            } else if (message instanceof NMessageTogglePlay) play = !play;
-            else if (message instanceof NMessageVolume) {
+            } else if (message instanceof NMessageTogglePlay) {
+                play = !play;
+            } else if (message instanceof NMessageVolume) {
                 volume = ((NMessageVolume) message).getVolume();
-            } else if (message instanceof NMessageStop) stop = true;
+            } else if (message instanceof NMessageStop) {
+                stop = true;
+            } else if (message instanceof NMessageAmpl) {
+                ampl = ((NMessageAmpl) message).getAmpl();
+            }
         }
     }
 
@@ -121,7 +128,7 @@ public class NPlayerThread extends Thread {
             double distance = Math.pow(playerX - sourceX, 2) + Math.pow(playerY - sourceY, 2) + Math.pow(playerZ - sourceZ, 2);
             // max distance: 20 blocks (20^2 = 400)
             // min distance: 2 blocks (2^2 = 4)
-            double lerpedDistance = NMath.inverseLerp(400, 4, distance);
+            double lerpedDistance = NMath.inverseLerp(400 * this.ampl, 4 * this.ampl, distance);
 
             buffer[i] *= NMath.clamp(0, 1, this.volume * volume * lerpedDistance);
         }

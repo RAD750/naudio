@@ -7,7 +7,8 @@ public class NPlayer {
     private static int ID = 0;
 
     private final int id;
-    private float volume;
+    private double volume;
+    private double ampl;
     private final double sourceX, sourceY, sourceZ;
     private boolean play;
     private final boolean isServer;
@@ -16,6 +17,7 @@ public class NPlayer {
     public NPlayer(double sourceX, double sourceY, double sourceZ, boolean isRemote) {
         this.id = ID++;
         this.volume = 1.0f;
+        this.ampl = 1.0f;
         this.sourceX = sourceX;
         this.sourceY = sourceY;
         this.sourceZ = sourceZ;
@@ -45,13 +47,23 @@ public class NPlayer {
         }
     }
 
-    public void setVolume(float volume) {
+    public void setVolume(double volume) {
         if (isServer) {
-            NResult result = PacketHandler.sendVolume(id, volume, sourceX, sourceY, sourceZ);
+            NResult result = PacketHandler.sendVolume(id, (float) volume, sourceX, sourceY, sourceZ);
             if (result.isError()) {
                 System.out.println(result.getError());
             }
             this.volume = volume;
+        }
+    }
+
+    public void setAmpl(double ampl) {
+        if (isServer) {
+            NResult result = PacketHandler.sendAmpl(id, (float) ampl, sourceX, sourceY, sourceZ);
+            if (result.isError()) {
+                System.out.println(result.getError());
+            }
+            this.ampl = ampl;
         }
     }
 
@@ -70,14 +82,14 @@ public class NPlayer {
 
     public void sendUpdate() {
         if (isServer) {
-            NResult result = PacketHandler.sendUpdate(id, urlPlaying, volume, play, sourceX, sourceY, sourceZ);
+            NResult result = PacketHandler.sendUpdate(id, urlPlaying, (float) volume, (float) ampl, play, sourceX, sourceY, sourceZ);
             if (result.isError()) {
                 System.out.println(result.getError());
             }
         }
     }
 
-    public float getVolume() {
+    public double getVolume() {
         return this.volume;
     }
 
