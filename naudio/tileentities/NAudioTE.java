@@ -10,7 +10,7 @@ import java.util.List;
 
 public class NAudioTE extends TileEntity implements IHostedPeripheral {
     private NPlayer nPlayer;
-    private final String[] methods = new String[]{"play", "togglePlay", "setVolume", "getVolume", "isPlaying", "help", "sendUpdate"};
+    private final String[] methods = new String[]{"play", "togglePlay", "setVolume", "getVolume", "isPlaying", "help", "sendUpdate", "setAmplification"};
 
     @Override
     public boolean canUpdate() {
@@ -50,10 +50,10 @@ public class NAudioTE extends TileEntity implements IHostedPeripheral {
                     nPlayer.togglePlay();
                     break;
                 case 2: // setVolume
-                    if (p2.length != 1 || !(p2[0] instanceof Float)) {
+                    if (p2.length != 1 || !(p2[0] instanceof Double)) {
                         return new Object[]{"error", "not valid call"};
                     }
-                    nPlayer.setVolume((Float) p2[0]);
+                    nPlayer.setVolume((Double) p2[0]);
                     break;
                 case 3: // getVolume
                     if (p2.length != 0) {
@@ -71,14 +71,21 @@ public class NAudioTE extends TileEntity implements IHostedPeripheral {
                     return new Object[]{"play(url) - plays a specific URL (must not redirect)\n" +
                             "togglePlay() - toggles the play function (aka stop/play)\n" +
                             "setVolume(volume) - sets the output volume, must be a float between 0.0 and 1.0\n" +
+                            "setAmplification(amplification) - sets the output amplification (i.e. how much should be the radius in which the audio is still listenable), must be a float between 0.0 and 11.0\n" +
                             "getVolume() - returns the output volume\n" +
                             "isPlaying() - returns whether the player is playing (aka not stopped)\n" +
                             "sendUpdate() - sends update to all nearby clients who haven't connected yet (useful to web radios, have to be called once every some seconds if you're using this function)"};
-                case 6: //sendUpdate
+                case 6: // sendUpdate
                     if (p2.length != 0) {
                         return new Object[]{"error", "not valid call"};
                     }
                     nPlayer.sendUpdate();
+                    break;
+                case 7: // setAmplification
+                    if (p2.length != 1 || !(p2[0] instanceof Double)) {
+                        return new Object[]{"error", "not valid call"};
+                    }
+                    nPlayer.setAmpl((Double) p2[0]);
                     break;
             }
         } else {
