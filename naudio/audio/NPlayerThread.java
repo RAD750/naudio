@@ -24,6 +24,7 @@ public class NPlayerThread extends Thread {
     protected boolean play;
     private final Minecraft minecraft;
     private boolean stop;
+    public boolean started;
 
     public NPlayerThread(LinkedBlockingDeque<NMessage> channel) {
         this.channel = channel;
@@ -33,6 +34,7 @@ public class NPlayerThread extends Thread {
         play = false;
         minecraft = Minecraft.getMinecraft();
         stop = false;
+        started = false;
         initAudio();
     }
 
@@ -103,6 +105,7 @@ public class NPlayerThread extends Thread {
                 sourceY = ((NMessagePlayAudio) message).getSourceY();
                 sourceZ = ((NMessagePlayAudio) message).getSourceZ();
                 play = true;
+                started = true;
             } else if (message instanceof NMessageTogglePlay) {
                 play = !play;
             } else if (message instanceof NMessageVolume) {

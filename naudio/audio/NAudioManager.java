@@ -54,7 +54,7 @@ public class NAudioManager {
                             for (int id : players.keySet()) {
                                 NPlayerThread playerThread = players.get(id);
                                 double distance = player.getDistance(playerThread.sourceX, playerThread.sourceY, playerThread.sourceZ);
-                                if (distance > 64.0 && playerThread.play) {
+                                if (distance > 64.0 && playerThread.started) {
                                     ids.add(id);
                                 }
                             }
@@ -150,6 +150,7 @@ public class NAudioManager {
     }
 
     public void setState(int id, String urlString, double sourceX, double sourceY, double sourceZ, float volume, float ampl, boolean playing) {
+        if (players.containsKey(id)) return;
         this.play(id, urlString, sourceX, sourceY, sourceZ);
         this.setVolume(id, volume);
         this.setAmpl(id, ampl);
