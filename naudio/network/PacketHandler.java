@@ -30,7 +30,7 @@ public class PacketHandler implements IPacketHandler {
         switch (type) {
             case PacketTypes.PLAY:
                 id = reader.readInt();
-                url = reader.readUTF();
+                url = readString(reader);
                 sourceX = reader.readDouble();
                 sourceY = reader.readDouble();
                 sourceZ = reader.readDouble();
@@ -47,7 +47,7 @@ public class PacketHandler implements IPacketHandler {
                 break;
             case PacketTypes.SET_STATE:
                 id = reader.readInt();
-                url = reader.readUTF();
+                url = readString(reader);
                 sourceX = reader.readDouble();
                 sourceY = reader.readDouble();
                 sourceZ = reader.readDouble();
@@ -76,7 +76,7 @@ public class PacketHandler implements IPacketHandler {
         try {
             dataStream.writeInt(PacketTypes.PLAY);
             dataStream.writeInt(id);
-            dataStream.writeUTF(url);
+            writeString(dataStream, url);
             dataStream.writeDouble(sourceX);
             dataStream.writeDouble(sourceY);
             dataStream.writeDouble(sourceZ);
@@ -157,7 +157,7 @@ public class PacketHandler implements IPacketHandler {
         try {
             dataStream.writeInt(PacketTypes.SET_STATE);
             dataStream.writeInt(id);
-            dataStream.writeUTF(url);
+            writeString(dataStream, url);
             dataStream.writeDouble(sourceX);
             dataStream.writeDouble(sourceY);
             dataStream.writeDouble(sourceZ);
@@ -170,5 +170,23 @@ public class PacketHandler implements IPacketHandler {
 
         PacketDispatcher.sendPacketToAllAround(sourceX, sourceY, sourceZ, 64.0, 0, PacketDispatcher.getPacket(ModInformation.CHANNEL, byteStream.toByteArray()));
         return NResult.ok();
+    }
+
+    private static void writeString(DataOutputStream stream, String str) throws IOException {
+        int len = str.length();
+        stream.writeInt(len);
+        for (char c : str.toCharArray()) {
+            stream.writeChar(c);
+        }
+    }
+
+    private static String readString(ByteArrayDataInput reader) {
+        int len = reader.readInt();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            str.append(reader.readChar());
+        }
+
+        return str.toString();
     }
 }
