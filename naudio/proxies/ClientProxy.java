@@ -6,6 +6,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import naudio.audio.NAudioManager;
 import naudio.solid.rendertables.RenderTableNAudioBlock;
 import naudio.tileentities.NAudioTE;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ClientProxy
         extends CommonProxy {
@@ -36,5 +37,6 @@ public class ClientProxy
     @Init
     public void init(FMLInitializationEvent event) {
 		ClientRegistry.bindTileEntitySpecialRenderer(NAudioTE.class, new RenderTableNAudioBlock());
+		MinecraftForgeClient.preloadTexture("/naudio/textures/items.png");
     }
 }
