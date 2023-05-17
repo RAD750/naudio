@@ -52,7 +52,7 @@ public class NPlayerThread extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (minecraft.thePlayer != null) {
             try {
                 processMessages();
             } catch (LineUnavailableException e) {
