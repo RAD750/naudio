@@ -8,11 +8,11 @@ import net.minecraft.item.ItemStack;
 
 public class NCraftingHandler {
     public static void addCraftings() {
-//		GameRegistry.addShapedRecipe(new ItemStack(Blocks.nAudioBlock, 1), new Object[] {
-//				"#C#", "#N#", "#C#",
-//				'#', new ItemStack(Item.ingotIron),
-//				'C', GregtechHandler.getGregTechItem(3, 1, 24),
-//				'N', new ItemStack(Block.music)
-//		});
+        GameRegistry.addShapedRecipe(new ItemStack(Blocks.nAudioBlock, 1), new Object[]{
+                "#C#", "#N#", "#C#",
+                '#', new ItemStack(Item.ingotIron),
+                'C', GregtechHandler.getGregTechItem(3, 1, 24),
+                'N', new ItemStack(Block.music)
+        });
     }
 }
